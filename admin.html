@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Dashboard</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ffffff, #6767cf);
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .dashboard {
+            width: 93%;
+            max-width: 1200px;
+            margin-top: 10%;
+            margin-left: 2%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .nav-tabs button:hover {
+            background: #0056b3;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .active-tab {
+            display: block;
+        }
+
+        .request-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .request-table th, .request-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .request-table th {
+            background-color: #f2f2f2;
+        }
+
+        .request-table td button {
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .request-table td button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>Admin - Dashboard</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="nav-tabs">
+            <button onclick="showTab('allRequests')">View List</button>
+            <button onclick="filterRequests('Pending')">Pending</button>
+            <button onclick="filterRequests('Approved')">Approved</button>
+            <button onclick="filterRequests('Rejected')">Rejected</button>
+        </div>
+
+        <div id="allRequests" class="tab-content active-tab">
+            <h2>All Travel Requests</h2>
+            <table class="request-table" id="requestTable">
+                <thead>
+                    <tr>
+                        <th>Employee Name</th>
+                        <th>Destination</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="requestTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let requests = [
+            {
+                empId: '01',
+                empName: 'Ana',
+                project: 'Project X',
+                cause: 'Business',
+                source: 'TVM',
+                destination: 'Delhi',
+                fromDate: '2024-09-20',
+                toDate: '2024-09-25',
+                noOfDays: 5,
+                modeOfTravel: 'Flight',
+                priority: 'Critical',
+                status: 'Pending'
+            },
+            {
+                empId: '02',
+                empName: 'Sna',
+                project: 'Project',
+                cause: 'Training',
+                source: 'Chennai',
+                destination: 'Bangalore',
+                fromDate: '2024-09-15',
+                toDate: '2024-09-20',
+                noOfDays: 5,
+                modeOfTravel: 'Train',
+                priority: 'Normal',
+                status: 'Approved'
+            },
+            {
+                empId: '03',
+                empName: 'Dino',
+                project: 'Govn',
+                cause: 'Conference',
+                source: 'Bangalore',
+                destination: 'Mumbai',
+                fromDate: '2024-09-22',
+                toDate: '2024-09-24',
+                noOfDays: 2,
+                modeOfTravel: 'Flight',
+                priority: 'Critical',
+                status: 'Rejected'
+            }
+        ];
+
+        function displayRequests(filteredRequests) {
+            const tableBody = document.getElementById('requestTableBody');
+            tableBody.innerHTML = '';
+
+            filteredRequests.forEach((request, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${request.empName}</td>
+                    <td>${request.destination}</td>
+                    <td>${request.priority}</td>
+                    <td>${request.status}</td>
+                    <td>
+                        <button onclick="viewDetails(${index})">View Details</button>
+                        ${filteredRequests === requests ? '' : `
+                        <button onclick="editRequest(${index})">Edit</button>
+                        `}
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function viewDetails(index) {
+            const request = requests[index];
+            alert(`Details:\nEmployee ID: ${request.empId}\nEmployee Name: ${request.empName}\nProject: ${request.project}\nCause: ${request.cause}\nSource: ${request.source}\nDestination: ${request.destination}\nFrom Date: ${request.fromDate}\nTo Date: ${request.toDate}\nNo. of Days: ${request.noOfDays}\nMode of Travel: ${request.modeOfTravel}\nPriority: ${request.priority}\nStatus: ${request.status}`);
+        }
+
+        function editRequest(index) {
+            const newStatus = prompt('Enter new status (Approved/Rejected/On Hold):', requests[index].status);
+            if (newStatus && ['Approved', 'Rejected', 'On Hold'].includes(newStatus)) {
+                requests[index].status = newStatus;
+                displayRequests(requests);
+                showTab('allRequests');
+            } else {
+                alert('Invalid status.');
+            }
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active-tab');
+            });
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
+        function filterRequests(status) {
+            if (status === 'all') {
+                displayRequests(requests);
+            } else {
+                const filteredRequests = requests.filter(request => request.status === status);
+                displayRequests(filteredRequests);
+            }
+            showTab('allRequests');
+        }
+
+        function logout() {
+            window.location.href = 'login.html';
+        }
+        displayRequests(requests);
+    </script>
+</body>
+</html>
